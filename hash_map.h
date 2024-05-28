@@ -18,7 +18,7 @@ class hashMap{
         std::vector<user*> valuesSet;
     public:
         hashMap() : size(0), capacity(503), container(capacity) {}
-        ~hashMap();
+        ~hashMap() = default;
         user* get(long double);
         user* put(long double, user*);
         user* remove(long double);
@@ -29,10 +29,6 @@ class hashMap{
         int function(long double);
 
 };
-
-
-hashMap::~hashMap(){
-}
 
 user* hashMap::get(long double user_id){
     int index = function(user_id);
@@ -50,11 +46,13 @@ user* hashMap::put(long double user_id, user* usuario){
     Entry newEntry = new entry<long double, user*>(user_id, usuario);
     if(container[index]){
         Entry tmp = container[index];
+        keysSet.push_back(user_id);
         valuesSet.push_back(usuario);
-        //Elimina una instancia del valor asociado al par que esta siendo reemplazado para que no haya una instancia extra en el set de valores.
+        //Elimina una instancia del valor y de la clave asociados al par eliminado de sus respectivos sets.
         for(long long unsigned int i=0 ; i<valuesSet.size() ; i++){
             if(valuesSet[i] == tmp->value){
-                valuesSet.erase(valuesSet.begin()+i);
+                valuesSet.erase(valuesSet.begin() + i);
+                keysSet.erase(keysSet.begin() + i);
                 break;
             }
         }
@@ -76,10 +74,16 @@ user* hashMap::remove(long double user_id){
     if(container[index]){
         Entry tmp = container[index];
         container.erase(container.begin()+index);
+        for(long long unsigned int i=0 ; i<valuesSet.size() ; i++){
+            if(valuesSet[i] == tmp->value){
+                valuesSet.erase(valuesSet.begin() + i);
+                keysSet.erase(keysSet.begin() + i);
+                break;
+            }
+        }
         return tmp->value;
     }
     else{
-        size--;
         return nullptr;
     }
 }
