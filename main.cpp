@@ -1,8 +1,13 @@
 #include "open_hash_map.h"
 
+int function1(long long key){
+        return key;
+}
 
 int main(){
-    open_hash_map* mapa = new open_hash_map();
+    int (*hash_function1)(long long) = function1;
+
+    open_hash_map<long long>* mapa = new open_hash_map<long long>(hash_function1);
     user* user1 = new user("Harvard", 1001, "Alice", 200, 150, 300, "Thu Jul 28 07:16:49 +0000 2016");
     user* user2 = new user("MIT", 315, "Bob", 340, 200, 500, "Mon Aug 22 10:00:00 +0000 2018");
     user* user3 = new user("Stanford", 487, "Charlie", 150, 180, 350, "Wed Sep 15 12:30:00 +0000 2020");
@@ -47,3 +52,4 @@ int main(){
         mapa->get(510)->printData();
     }
 }
+

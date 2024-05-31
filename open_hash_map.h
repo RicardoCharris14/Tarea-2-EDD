@@ -7,33 +7,35 @@
 #include <vector>
 #include <iostream>
 
+template <typename T>
 class open_hash_map{
     public:
-        using Entry = entry<long double, user*>*;
-        using Linked_list = linked_list<long double, user*>*;
-        using Vector = std::vector<linked_list<long double, user*>*>*;
+        using Entry = entry<T, user*>*;
+        using Linked_list = linked_list<T, user*>*;
+        using Vector = std::vector<linked_list<T, user*>*>*;
     private:
         int size;
         int capacity;
         Vector container;
-        std::vector<long double> keysSet;
+        std::vector<T> keysSet;
         std::vector<user*> valuesSet;
+        int (*hash_function)(T);
     public:
-        open_hash_map(int capacity) : size(0), capacity(capacity){
+        open_hash_map(int capacity, int (*hash_function)(T)) : size(0), capacity(capacity), hash_function(hash_function){
             container = new std::vector<Linked_list>(capacity);
         }
-        open_hash_map() : size(0), capacity(5) {
+        open_hash_map(int (*hash_function)(T)) : size(0), capacity(5), hash_function(hash_function) {
             container = new std::vector<Linked_list>(capacity);
         }
         ~open_hash_map() = default;
-        user* get(long double);
-        void put(long double, user*, bool);
-        user* remove(long double);
+        user* get(T);
+        void put(T, user*, bool duplicating = false);
+        user* remove(T);
         int getSize();
         bool isEmpty();
-        std::vector<long double> keys();
+        std::vector<T> keys();
         std::vector<user*> values();
-        int function(long double);
+        int function(T);
         void printCapacity(){
             std::cout << "Capacidad: "<< capacity << std::endl;
         }
@@ -42,10 +44,11 @@ class open_hash_map{
 
 };
 
-user* open_hash_map::get(long double user_id){
-    int index = function(user_id);
+template <typename T>
+user* open_hash_map<T>::get(T key){
+    int index = function(key);
     if((*container)[index]){
-        int list_index = (*container)[index]->find(user_id);
+        int list_index = (*container)[index]->find(key);
         return (*container)[index]->get(list_index)->value;
     }
     else{
@@ -54,16 +57,17 @@ user* open_hash_map::get(long double user_id){
 }
 
 //Ingresa un nuevo par de elementos al hash map o reemplaza el anterior, y retorna nullPtr o el valor del par anterior, respectivamente. 
-void open_hash_map::put(long double user_id, user* usuario, bool duplicating = false){
+template <typename T>
+void open_hash_map<T>::put(T key, user* usuario, bool duplicating){
     for(long long unsigned i=0 ; i<keysSet.size() ; i++){
-        if(user_id == keysSet[i]){
+        if(key == keysSet[i]){
             return;
         }
     }
-    int index = function(user_id);
-    Entry newEntry = new entry<long double, user*>(user_id, usuario);
+    int index = function(key);
+    Entry newEntry = new entry<T, user*>(key, usuario);
     if((*container)[index]){
-        keysSet.push_back(user_id);
+        keysSet.push_back(key);
         valuesSet.push_back(usuario);
         (*container)[index]->push_back(newEntry);
         size++;
@@ -72,19 +76,20 @@ void open_hash_map::put(long double user_id, user* usuario, bool duplicating = f
     }
     else{
         size++;
-        keysSet.push_back(user_id);
+        keysSet.push_back(key);
         valuesSet.push_back(usuario);
-        (*container)[index] = new linked_list<long double, user*>();
+        (*container)[index] = new linked_list<T, user*>();
         (*container)[index]->push_back(newEntry);
         if(!duplicating){duplicate();}
     }
 }
 
-//elimina el par con clave 'user_id'
-user* open_hash_map::remove(long double user_id){
-    int index = function(user_id);
+//elimina el par con clave 'key'
+template <typename T>
+user* open_hash_map<T>::remove(T key){
+    int index = function(key);
     if((*container)[index]){
-        int list_index = (*container)[index]->find(user_id);
+        int list_index = (*container)[index]->find(key);
         Entry tmp = (*container)[index]->remove(list_index);
         size--;
         for(long long unsigned int i=0 ; i<valuesSet.size() ; i++){
@@ -101,31 +106,37 @@ user* open_hash_map::remove(long double user_id){
     }
 }
 
-int open_hash_map::getSize(){
+template <typename T>
+int open_hash_map<T>::getSize(){
     return size;
 }
 
-bool open_hash_map::isEmpty(){
+template <typename T>
+bool open_hash_map<T>::isEmpty(){
     return size==0;
 }
 
-std::vector<long double> open_hash_map::keys(){
+template <typename T>
+std::vector<T> open_hash_map<T>::keys(){
     return keysSet;
 }
 
-std::vector<user*> open_hash_map::values(){
+template <typename T>
+std::vector<user*> open_hash_map<T>::values(){
     return valuesSet;
 }
 
-int open_hash_map::function(long double user_id){
-    return int(user_id) % capacity;
+template <typename T>
+int open_hash_map<T>::function(T key){
+    return hash_function(key) % capacity;
 }
 
 //Duplica el tamaño del contenedor en caso de que hayan una cantidad de elementos igual al 90% del tamaño del contenedor.
-void open_hash_map::duplicate(){
+template <typename T>
+void open_hash_map<T>::duplicate(){
     if(size >= int(capacity * 0.9f)){
         //Crea un hash map con el doble de tamaño para no tener que recorrer
-        open_hash_map* tmp_map = new open_hash_map(2 * capacity);
+        open_hash_map* tmp_map = new open_hash_map(2 * capacity, hash_function);
         for(auto key : keysSet){
             user* tmp_user = get(key);
             tmp_map->put(key, tmp_user);
@@ -134,7 +145,7 @@ void open_hash_map::duplicate(){
         delete container;
 
         container = new std::vector<Linked_list>(capacity * 2);
-        std::vector<long double> tmp_keys = tmp_map->keys();
+        std::vector<T> tmp_keys = tmp_map->keys();
         for(auto key : tmp_keys){
             user* tmp_user = tmp_map->get(key);
             put(key, tmp_user, true);
