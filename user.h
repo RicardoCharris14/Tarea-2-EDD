@@ -9,25 +9,25 @@ public:
     using string = std::string;
 private:
     string university;
-    long double user_ID;
+    long long user_ID;
     string username;
     int numberTweets;
     int friendsCount;
     int followersCount;
     string createdAt;
 public:
-    user(string, long double, string, int, int, int, string);
-    int getID();
+    user(string, long long, string, int, int, int, string);
+    long long getID();
     string getUsername();
     void printData();
 };
 
-user::user(string university, long double user_ID, string username, int numberTweets, 
+user::user(string university, long long user_ID, string username, int numberTweets,
             int friendsCount, int followersCount, string createdAt) : university(university),
              user_ID(user_ID), username(username), numberTweets(numberTweets), friendsCount(friendsCount),
               followersCount(followersCount), createdAt(createdAt) {}
 
-int user::getID(){
+long long user::getID(){
     return user_ID;
 }
 
@@ -45,4 +45,5 @@ void user::printData(){
               << "Followers Count: " << followersCount << std::endl 
               << "Created at: " << createdAt << "\n\n";
 }
+
 #endif

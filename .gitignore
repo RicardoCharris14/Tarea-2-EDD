@@ -1,5 +1,9 @@
+# Ejecutables
 *.exe
 ejecutable
+test
+
+# Otros
 .vscode/
 output/
 *.kate-swp

@@ -1,75 +1,86 @@
 #ifndef HASH_MAP
 #define HASH_MAP
 
+#include "probing_methods.h"
 #include "entry.h"
 #include "user.h"
 #include <vector>
 #include <iostream>
+#include <optional>
 
-class hashMap{
+template<typename K>
+class hash_map{
     public:
-        using Entry = entry<long double, user*>*;
-        using Vector = std::vector<Entry>;
+        using Entry = entry<K, user*>*;
+        using Vector = std::vector<Entry>*;
     private:
         int size;
         int capacity;
         Vector container;
-        std::vector<long double> keysSet;
-        std::vector<user*> valuesSet;
+        int (*probing_method) (K key, int capacity, int i);
+//        std::vector<K> keysSet;
+//        std::vector<user*> valuesSet;
     public:
-        hashMap() : size(0), capacity(503), container(capacity) {}
-        ~hashMap() = default;
-        user* get(long double);
-        user* put(long double, user*);
-        user* remove(long double);
+        hash_map() : size(0), capacity(503), probing_method(quadratic_probing){
+            container = new std::vector<Entry>(capacity);
+        }
+        ~hash_map() = default;
+        std::optional<user*> get(K key);
+        void put(K key, user* usuario);
+//        user* remove(K key);
         int getSize();
         bool isEmpty();
-        std::vector<long double> keys();
+        std::vector<K> keys();
         std::vector<user*> values();
-        int function(long double);
-
+        void set_probing_method( int (*probing_method)(K, int, int) );
+    private:
+        int probing(K key, int i);
+ //       void duplicate_capacity();
 };
 
-user* hashMap::get(long double user_id){
-    int index = function(user_id);
-    if(container[index]){
-        return container[index]->value;
-    }
-    else{
-        return nullptr;
-    }
-}
+template<typename K>
+std::optional<user*> hash_map<K>::get(K key){
 
-//Ingresa un nuevo par de elementos al hash map o reemplaza el anterior, y retorna nullPtr o el valor del par anterior, respectivamente. 
-user* hashMap::put(long double user_id, user* usuario){
-    int index = function(user_id);
-    Entry newEntry = new entry<long double, user*>(user_id, usuario);
-    if(container[index]){
-        Entry tmp = container[index];
-        keysSet.push_back(user_id);
-        valuesSet.push_back(usuario);
-        //Elimina una instancia del valor y de la clave asociados al par eliminado de sus respectivos sets.
-        for(long long unsigned int i=0 ; i<valuesSet.size() ; i++){
-            if(valuesSet[i] == tmp->value){
-                valuesSet.erase(valuesSet.begin() + i);
-                keysSet.erase(keysSet.begin() + i);
-                break;
-            }
+    int i = 0;
+    int index = probing(key, i);
+
+    // Manejo de colisiones.
+    while ((*container)[index]) {
+        if ((*container)[index]->key == key) {
+            return (*container)[index]->value;
         }
-        container[index] = newEntry;
-        return tmp->value;
+        index = probing(key, ++i);
     }
-    else{
-        size++;
-        keysSet.push_back(user_id);
-        valuesSet.push_back(usuario);
-        container[index] = newEntry;
-        return nullptr;
-    }
+
+    // Si se llega hasta acá, no se encontro el usuario.
+    return {};
 }
 
+// Inserta el par (key, usuario). En caso de colisión, se utiliza probing para resolver.
+// Si el par ya se encuentra en la hash table, no se hace ningún cambio.
+template<typename K>
+void hash_map<K>::put(K key, user* usuario){
+//    if (size >= int(capacity * 0.9f)) duplicate_capacity();
+
+    int i = 0;
+    int index = probing(key, i);
+
+    // Manejo de colisiones.
+    while ((*container)[index]) {
+        if ((*container)[index]->key == key) { // El par ya existe en la table
+            return;
+        }
+        index = probing(key, ++i);
+    }
+
+    (*container)[index] = new entry<K, user*>(key, usuario);
+    size++;
+}
+
+/* Complica algo las cosas
 //elimina el par con clave 'user_id'
-user* hashMap::remove(long double user_id){
+template<typename K>
+user* hashMap<K>::remove(K user_id){
     int index = function(user_id);
     if(container[index]){
         Entry tmp = container[index];
@@ -87,25 +98,31 @@ user* hashMap::remove(long double user_id){
         return nullptr;
     }
 }
+*/
 
-int hashMap::getSize(){
+template<typename K>
+int hash_map<K>::getSize(){
     return size;
 }
 
-bool hashMap::isEmpty(){
+template<typename K>
+bool hash_map<K>::isEmpty(){
     return size==0;
 }
-
-std::vector<long double> hashMap::keys(){
+/*
+template<typename K>
+std::vector<K> hash_map<K>::keys(){
     return keysSet;
 }
 
-std::vector<user*> hashMap::values(){
+template<typename K>
+std::vector<user*> hash_map<K>::values(){
     return valuesSet;
 }
-
-int hashMap::function(long double user_id){
-    return int(user_id) % capacity;
+*/
+template<typename K>
+int hash_map<K>::probing(K key, int i){
+    return probing_method(key, capacity, i);
 }
 
 #endif
