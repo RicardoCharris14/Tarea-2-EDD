@@ -66,8 +66,16 @@ entry<T, Type>* linked_list<T, Type>::remove(int index){
         for(int i=1 ; i<index ; i++){
             tmp = tmp->getNext();
         }
-        tmp->getPrevious()->setNext(tmp->getNext());
-        tmp->getNext()->setPrevious(tmp->getPrevious());
+        if(tmp->getPrevious() == nullptr && tmp->getNext() == nullptr){
+            head->setNext(nullptr);
+            tail->setPrevious(nullptr);
+        } else if(tmp->getPrevious() == nullptr){
+            head->setNext(tmp->getNext());
+            tmp->getNext()->setPrevious(nullptr);
+        } else if(tmp->getNext() == nullptr){
+            tail->setPrevious(tmp->getPrevious());
+            tmp->getPrevious()->setNext(nullptr);
+        }
         large--;
         return tmp->getValue();
     } catch(const std::runtime_error& e){

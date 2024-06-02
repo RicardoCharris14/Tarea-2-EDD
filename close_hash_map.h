@@ -1,5 +1,5 @@
-#ifndef HASH_MAP
-#define HASH_MAP
+#ifndef CLOSE_HASH_MAP
+#define CLOSE_HASH_MAP
 
 #include "probing_methods.h"
 #include "entry.h"
@@ -9,7 +9,7 @@
 #include <optional>
 
 template<typename K>
-class hash_map{
+class close_hash_map{
     public:
         using Entry = entry<K, user*>*;
         using Vector = std::vector<Entry>*;
@@ -18,28 +18,27 @@ class hash_map{
         int capacity;
         Vector container;
         int (*probing_method) (K key, int capacity, int i);
-//        std::vector<K> keysSet;
-//        std::vector<user*> valuesSet;
     public:
-        hash_map() : size(0), capacity(503), probing_method(quadratic_probing){
+        close_hash_map(int capacity, int (*probing_method)(K, int, int)) : size(0), capacity(capacity), probing_method(probing_method){
             container = new std::vector<Entry>(capacity);
         }
-        ~hash_map() = default;
-        std::optional<user*> get(K key);
+        close_hash_map() : size(0), capacity(3), probing_method(quadratic_probing){
+            container = new std::vector<Entry>(capacity);
+        }
+        ~close_hash_map() = default;
+        user* get(K key);
         void put(K key, user* usuario);
-//        user* remove(K key);
+//      user* remove(K key);
         int getSize();
         bool isEmpty();
-        std::vector<K> keys();
-        std::vector<user*> values();
         void set_probing_method( int (*probing_method)(K, int, int) );
     private:
         int probing(K key, int i);
- //       void duplicate_capacity();
+ //     void duplicate_capacity();
 };
 
 template<typename K>
-std::optional<user*> hash_map<K>::get(K key){
+user* close_hash_map<K>::get(K key){
 
     int i = 0;
     int index = probing(key, i);
@@ -53,13 +52,13 @@ std::optional<user*> hash_map<K>::get(K key){
     }
 
     // Si se llega hasta acá, no se encontro el usuario.
-    return {};
+    return nullptr;
 }
 
 // Inserta el par (key, usuario). En caso de colisión, se utiliza probing para resolver.
 // Si el par ya se encuentra en la hash table, no se hace ningún cambio.
 template<typename K>
-void hash_map<K>::put(K key, user* usuario){
+void close_hash_map<K>::put(K key, user* usuario){
 //    if (size >= int(capacity * 0.9f)) duplicate_capacity();
 
     int i = 0;
@@ -101,27 +100,17 @@ user* hashMap<K>::remove(K user_id){
 */
 
 template<typename K>
-int hash_map<K>::getSize(){
+int close_hash_map<K>::getSize(){
     return size;
 }
 
 template<typename K>
-bool hash_map<K>::isEmpty(){
+bool close_hash_map<K>::isEmpty(){
     return size==0;
-}
-/*
-template<typename K>
-std::vector<K> hash_map<K>::keys(){
-    return keysSet;
 }
 
 template<typename K>
-std::vector<user*> hash_map<K>::values(){
-    return valuesSet;
-}
-*/
-template<typename K>
-int hash_map<K>::probing(K key, int i){
+int close_hash_map<K>::probing(K key, int i){
     return probing_method(key, capacity, i);
 }
 

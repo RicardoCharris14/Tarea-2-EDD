@@ -1,12 +1,44 @@
 #include "open_hash_map.h"
+#include "close_hash_map.h"
+#include "hashing_methods.h"
+#include <chrono>
+#include <iostream>
 
-int function1(long long key){
-        return key;
-}
+int main(int argc, char** argv){
+    // if(argc<2){
+    //     std::cerr << "Usage: " << argv[0] << " <cantidad de elementos>" << std::endl;
+    //     exit(1);
+    // }
 
-int main(){
-    int (*hash_function1)(long long) = function1;
+    // //Número de valores que se usaran en el experimento
+    // int n = atoi(argv[1]);
 
+    // //Iniciamos el temporizador
+    // auto start = std::chrono::high_resolution_clock::now();
+
+    // //Codigo a experimentar
+    
+
+
+
+
+
+
+
+
+
+    // //Fin del temporizador
+    // auto end = std::chrono::high_resolution_clock::now();
+
+    // //Calculamos el tiempo de ejecución
+    // double tiempo_ejecucion = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+
+    // //Transformamos de nanosegundos a segundos
+    // tiempo_ejecucion *= 1e-9;
+
+    // //Resultados
+    // std::cout << argv[0] << ';' << n << ';' << tiempo_ejecucion << std::endl;
+    int (*hash_function1)(long long, int) = div;
     open_hash_map<long long>* mapa = new open_hash_map<long long>(hash_function1);
     user* user1 = new user("Harvard", 1001, "Alice", 200, 150, 300, "Thu Jul 28 07:16:49 +0000 2016");
     user* user2 = new user("MIT", 315, "Bob", 340, 200, 500, "Mon Aug 22 10:00:00 +0000 2018");
@@ -20,21 +52,20 @@ int main(){
     mapa->put(user1->getID(), user1);
     mapa->put(user2->getID(), user2);
     mapa->put(user3->getID(), user3);
-    mapa->printCapacity();
     mapa->put(user4->getID(), user4);
-    mapa->printCapacity();
     mapa->put(user5->getID(), user5);
-    mapa->printCapacity();
     mapa->put(user6->getID(), user6);
 
     for(auto element : mapa->keys()){
         std::cout << "Clave: " << element << std::endl;
     }
-
     for(auto element : mapa->values()){
-        std:: cout << element << std::endl;
+        std:: cout << "Usuario: " <<element << std::endl;
     }
 
+    mapa->printSize();
+    mapa->remove(487);
+    mapa->remove(510);
 
     if(mapa->get(1001)!= nullptr){
         mapa->get(1001)->printData();
@@ -50,6 +81,14 @@ int main(){
     }
     if(mapa->get(510)!= nullptr){
         mapa->get(510)->printData();
+    }
+
+    mapa->printSize();
+    for(auto element : mapa->keys()){
+        std::cout << "Clave: " << element << std::endl;
+    }
+    for(auto element : mapa->values()){
+        std:: cout << "Usuario: " <<element << std::endl;
     }
 }
 

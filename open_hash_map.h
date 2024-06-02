@@ -17,33 +17,45 @@ class open_hash_map{
         int size;
         int capacity;
         Vector container;
-        std::vector<T> keysSet;
-        std::vector<user*> valuesSet;
-        int (*hash_function)(T);
+        int (*hash_function)(T, int);
+        std::vector<T> keySet;
+        std::vector<user*> valueSet;
     public:
-        open_hash_map(int capacity, int (*hash_function)(T)) : size(0), capacity(capacity), hash_function(hash_function){
+        open_hash_map(int capacity, int (*hash_function)(T, int)) : size(0), capacity(capacity), hash_function(hash_function){
             container = new std::vector<Linked_list>(capacity);
         }
-        open_hash_map(int (*hash_function)(T)) : size(0), capacity(5), hash_function(hash_function) {
+        open_hash_map(int (*hash_function)(T, int)) : size(0), capacity(5), hash_function(hash_function) {
             container = new std::vector<Linked_list>(capacity);
         }
-        ~open_hash_map() = default;
+        ~open_hash_map();
         user* get(T);
         void put(T, user*, bool duplicating = false);
         user* remove(T);
         int getSize();
         bool isEmpty();
+        int function(T);
         std::vector<T> keys();
         std::vector<user*> values();
-        int function(T);
         void printCapacity(){
             std::cout << "Capacidad: "<< capacity << std::endl;
+        }
+        void printSize(){
+            std::cout << "Size: "<< size << std::endl;
         }
     private:
         void duplicate();  
 
 };
 
+//Elimina los punteros 'user*' que se encuentrarn dentro de valueSet y los contenedores.
+template <typename T>
+open_hash_map<T>::~open_hash_map(){
+    for(long long unsigned i=0 ; i<valueSet.size() ; i++){
+        delete valueSet[i];
+    }
+}
+
+//Obtiene el valor asociado a la key ingresada por parametro en caso de que se encuentre en el hash map.
 template <typename T>
 user* open_hash_map<T>::get(T key){
     int index = function(key);
@@ -59,28 +71,27 @@ user* open_hash_map<T>::get(T key){
 //Ingresa un nuevo par de elementos al hash map o reemplaza el anterior, y retorna nullPtr o el valor del par anterior, respectivamente. 
 template <typename T>
 void open_hash_map<T>::put(T key, user* usuario, bool duplicating){
-    for(long long unsigned i=0 ; i<keysSet.size() ; i++){
-        if(key == keysSet[i]){
-            return;
-        }
-    }
     int index = function(key);
     Entry newEntry = new entry<T, user*>(key, usuario);
     if((*container)[index]){
-        keysSet.push_back(key);
-        valuesSet.push_back(usuario);
         (*container)[index]->push_back(newEntry);
-        size++;
-        if(!duplicating){duplicate();}
+        if(!duplicating){
+            size++;
+            keySet.push_back(key);
+            valueSet.push_back(usuario);
+            duplicate();
+        }
         
     }
     else{
-        size++;
-        keysSet.push_back(key);
-        valuesSet.push_back(usuario);
         (*container)[index] = new linked_list<T, user*>();
         (*container)[index]->push_back(newEntry);
-        if(!duplicating){duplicate();}
+        if(!duplicating){
+            size++;
+            keySet.push_back(key);
+            valueSet.push_back(usuario);
+            duplicate();
+        }
     }
 }
 
@@ -91,14 +102,18 @@ user* open_hash_map<T>::remove(T key){
     if((*container)[index]){
         int list_index = (*container)[index]->find(key);
         Entry tmp = (*container)[index]->remove(list_index);
+        if((*container)[index]->is_empty()){
+            delete (*container)[index];
+            (*container)[index] = nullptr;
+        }
         size--;
-        for(long long unsigned int i=0 ; i<valuesSet.size() ; i++){
-            if(valuesSet[i] == tmp->value){
-                valuesSet.erase(valuesSet.begin() + i);
-                keysSet.erase(keysSet.begin() + i);
-                break;
+        for(long long unsigned i=0 ; i<keySet.size() ; i++){
+            if(keySet[i]== key){
+                keySet.erase(keySet.begin() + i);
+                valueSet.erase(valueSet.begin() + i);
             }
         }
+        
         return tmp->value;
     }
     else{
@@ -116,19 +131,20 @@ bool open_hash_map<T>::isEmpty(){
     return size==0;
 }
 
+//Ejecuta la funcion hash, que se ingreso en el constructor, para le key ingresada.
+template <typename T>
+int open_hash_map<T>::function(T key){
+    return hash_function(key, capacity);
+}
+
 template <typename T>
 std::vector<T> open_hash_map<T>::keys(){
-    return keysSet;
+    return keySet;
 }
 
 template <typename T>
 std::vector<user*> open_hash_map<T>::values(){
-    return valuesSet;
-}
-
-template <typename T>
-int open_hash_map<T>::function(T key){
-    return hash_function(key) % capacity;
+    return valueSet;
 }
 
 //Duplica el tamaño del contenedor en caso de que hayan una cantidad de elementos igual al 90% del tamaño del contenedor.
@@ -137,21 +153,20 @@ void open_hash_map<T>::duplicate(){
     if(size >= int(capacity * 0.9f)){
         //Crea un hash map con el doble de tamaño para no tener que recorrer
         open_hash_map* tmp_map = new open_hash_map(2 * capacity, hash_function);
-        for(auto key : keysSet){
+        for(auto key : keySet){
             user* tmp_user = get(key);
-            tmp_map->put(key, tmp_user);
+            tmp_map->put(key, tmp_user, true);
         }
 
         delete container;
 
         container = new std::vector<Linked_list>(capacity * 2);
-        std::vector<T> tmp_keys = tmp_map->keys();
-        for(auto key : tmp_keys){
+        capacity *= 2;
+        for(auto key : keySet){
             user* tmp_user = tmp_map->get(key);
             put(key, tmp_user, true);
         }
         delete tmp_map;
-        capacity *= 2;
     }
 }
 
