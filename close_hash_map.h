@@ -22,7 +22,7 @@ class close_hash_map{
         close_hash_map(int capacity, int (*probing_method)(K, int, int)) : size(0), capacity(capacity), probing_method(probing_method){
             container = new std::vector<Entry>(capacity);
         }
-        close_hash_map() : size(0), capacity(3), probing_method(quadratic_probing){
+        close_hash_map(int (*probing_method)(K, int, int)) : size(0), capacity(3), probing_method(probing_method){
             container = new std::vector<Entry>(capacity);
         }
         ~close_hash_map() = default;

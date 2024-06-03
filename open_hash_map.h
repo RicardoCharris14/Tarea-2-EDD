@@ -73,7 +73,7 @@ template <typename T>
 void open_hash_map<T>::put(T key, user* usuario, bool duplicating){
     int index = function(key);
     Entry newEntry = new entry<T, user*>(key, usuario);
-    if((*container)[index]){
+    if((*container)[index] != nullptr){
         (*container)[index]->push_back(newEntry);
         if(!duplicating){
             size++;
@@ -81,7 +81,6 @@ void open_hash_map<T>::put(T key, user* usuario, bool duplicating){
             valueSet.push_back(usuario);
             duplicate();
         }
-        
     }
     else{
         (*container)[index] = new linked_list<T, user*>();
