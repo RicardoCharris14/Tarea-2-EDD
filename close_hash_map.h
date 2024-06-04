@@ -1,7 +1,6 @@
 #ifndef CLOSE_HASH_MAP
 #define CLOSE_HASH_MAP
 
-#include "probing_methods.h"
 #include "entry.h"
 #include "user.h"
 #include <vector>
@@ -20,10 +19,10 @@ class close_hash_map{
         int (*probing_method) (K key, int capacity, int i);
     public:
         close_hash_map(int capacity, int (*probing_method)(K, int, int)) : size(0), capacity(capacity), probing_method(probing_method){
-            container = new std::vector<Entry>(capacity);
+            container = new std::vector<Entry>(capacity, nullptr);
         }
         close_hash_map(int (*probing_method)(K, int, int)) : size(0), capacity(3), probing_method(probing_method){
-            container = new std::vector<Entry>(capacity);
+            container = new std::vector<Entry>(capacity, nullptr);
         }
         ~close_hash_map() = default;
         user* get(K key);

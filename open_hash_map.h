@@ -22,10 +22,10 @@ class open_hash_map{
         std::vector<user*> valueSet;
     public:
         open_hash_map(int capacity, int (*hash_function)(T, int)) : size(0), capacity(capacity), hash_function(hash_function){
-            container = new std::vector<Linked_list>(capacity);
+            container = new std::vector<Linked_list>(capacity, nullptr);
         }
         open_hash_map(int (*hash_function)(T, int)) : size(0), capacity(5), hash_function(hash_function) {
-            container = new std::vector<Linked_list>(capacity);
+            container = new std::vector<Linked_list>(capacity, nullptr);
         }
         ~open_hash_map();
         user* get(T);
