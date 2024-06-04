@@ -33,6 +33,14 @@ int main(int argc, char** argv){
     std::queue<user*> usuarios_search = create_users(n, file1);
     file1.close();
 
+    //Abre el archivo para crear usuarios falsos
+    std::ifstream file2("C:/Users/rica1/OneDrive/Escritorio/Universidad/Semestre 5/Estructuras de datos/Tareas/Tarea EDD 2/datasets/fakeData.csv");
+    if(!file2.is_open()){
+        std::cerr << "C:/Users/rica1/OneDrive/Escritorio/Universidad/Semestre 5/Estructuras de datos/Tareas/Tarea EDD 2/datasets/fakeData.csv" << std::endl;
+    }
+    std::queue<user*> fake_users = create_users(n, file2);
+    file2.close();
+
     //definicion para que no lance error en el codigo de experimentacion por crear el mapa y los punteros a funciones dentro del switch
     open_hash_map<long long> *mapa1;
     close_hash_map<long long> *mapa2;
@@ -68,7 +76,7 @@ int main(int argc, char** argv){
     //Iniciamos el temporizador para calcular el timepo de insercion de datos
     auto start_ins = std::chrono::high_resolution_clock::now();
 
-    //Codigo del experimento
+    //Insercion de usuarios al hash map
     switch(argv[3][0]){
         case('0'):
             while(!usuarios_insert.empty()){
@@ -101,6 +109,7 @@ int main(int argc, char** argv){
     double tiempo_ejecucion_insercion = std::chrono::duration_cast<std::chrono::nanoseconds>(end_ins - start_ins).count();
     //Transformamos de nanosegundos a segundos
     tiempo_ejecucion_insercion *= 1e-9;
+
 
     //Inicio del temporizador
     auto start_search = std::chrono::high_resolution_clock::now();
@@ -141,11 +150,42 @@ int main(int argc, char** argv){
     tiempo_ejecucion_busqueda *= 1e-9;
 
 
+    //Inicio del temporizador
+    auto start_fake = std::chrono::high_resolution_clock::now();
 
-    //Prueba para datos que no estan en la hash table(crear usuarios al azar o un csv con usuarios que no estan en el csv original);
+    //Trata de buscar usuarios que no estan en el hash map;
+    switch(argv[3][0]){
+        case('0'):
+            while(!fake_users.empty()){
+                user* tmp_user = fake_users.front();
+                mapa1->get(tmp_user->getID());
+                fake_users.pop();
+            }
+            break;
+        case('1'):
+        case('2'):
+        case('3'):
+            while(!fake_users.empty()){
+                user* tmp_user = fake_users.front();
+                mapa2->get(tmp_user->getID());
+                fake_users.pop();
+            }
+            break;
+        case('4'):
+            while(!fake_users.empty()){
+                user* tmp_user = fake_users.front();
+                mapa3->find(tmp_user->getID());
+                fake_users.pop();
+            }
+            break;
+    }
 
-
-
+    //Fin del temporizador
+    auto end_fake = std::chrono::high_resolution_clock::now();
+    //Calculamos el intervalo de timepo
+    double tiempo_ejecucion_fake = std::chrono::duration_cast<std::chrono::nanoseconds>(end_fake - start_fake).count();
+    //Transformar tiempo a segundos
+    tiempo_ejecucion_fake *= 1e-9;
 
 
 
@@ -166,5 +206,5 @@ int main(int argc, char** argv){
     }
 
     //Resultados
-    std::cout << argv[0] << ';' << n << ';' << tiempo_ejecucion_insercion << ';' << tiempo_ejecucion_busqueda << std::endl;
+    std::cout << argv[0] << ';' << n << ';' << tiempo_ejecucion_insercion << ';' << tiempo_ejecucion_busqueda << ';' << tiempo_ejecucion_fake << std::endl;
 }
