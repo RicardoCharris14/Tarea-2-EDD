@@ -10,8 +10,9 @@
 #include <unordered_map>
 
 int main(int argc, char** argv){
-    if(argc<4){
-        std::cerr << "Usage: " << argv[0] << " <cantidad de elementos> <direccion del csv> <0:open hashing ; 1:linear probing ; 2:double probing ; 3: cuadratic probing ; 4: stl hash table>" << std::endl;
+    if(argc<5){
+        std::cerr << "Usage: " << argv[0] << " <cantidad de elementos> <dirección del dataset.csv> <dirección del FakeData.csv> <hashing (0;1;2;3;4)>\n" << std::endl;
+        std::cerr << "Opciones para <hashing>:\n0: open hashing\n1: linear probing\n2: double probing\n3: cuadratic probing\n4: stl hash table (unordered_map)\n" << std::endl;
         exit(1);
     }
     //Número de valores que se usaran en el experimento
@@ -34,9 +35,9 @@ int main(int argc, char** argv){
     file1.close();
 
     //Abre el archivo para crear usuarios falsos
-    std::ifstream file2("C:/Users/rica1/OneDrive/Escritorio/Universidad/Semestre 5/Estructuras de datos/Tareas/Tarea EDD 2/datasets/fakeData.csv");
+    std::ifstream file2(argv[3]);
     if(!file2.is_open()){
-        std::cerr << "C:/Users/rica1/OneDrive/Escritorio/Universidad/Semestre 5/Estructuras de datos/Tareas/Tarea EDD 2/datasets/fakeData.csv" << std::endl;
+        std::cerr << argv[3] << std::endl;
     }
     std::queue<user*> fake_users = create_users(n, file2);
     file2.close();
@@ -49,7 +50,7 @@ int main(int argc, char** argv){
     int (*hash_function2)(long long, int, int);
 
     //Switch para seleccionar el tipo de hashing
-    switch(argv[3][0]){
+    switch(argv[4][0]){
         case '0':
             hash_function1 = mult;
             mapa1 = new open_hash_map<long long>(100, hash_function1);
@@ -77,7 +78,7 @@ int main(int argc, char** argv){
     auto start_ins = std::chrono::high_resolution_clock::now();
 
     //Insercion de usuarios al hash map
-    switch(argv[3][0]){
+    switch(argv[4][0]){
         case('0'):
             while(!usuarios_insert.empty()){
                 user* tmp_user = usuarios_insert.front();
@@ -115,7 +116,7 @@ int main(int argc, char** argv){
     auto start_search = std::chrono::high_resolution_clock::now();
 
     //Busqueda de usuarios que estan en el hash map
-    switch(argv[3][0]){
+    switch(argv[4][0]){
         case('0'):
             while(!usuarios_search.empty()){
                 user* tmp_user = usuarios_search.front();
@@ -154,7 +155,7 @@ int main(int argc, char** argv){
     auto start_fake = std::chrono::high_resolution_clock::now();
 
     //Trata de buscar usuarios que no estan en el hash map;
-    switch(argv[3][0]){
+    switch(argv[4][0]){
         case('0'):
             while(!fake_users.empty()){
                 user* tmp_user = fake_users.front();
@@ -191,7 +192,7 @@ int main(int argc, char** argv){
 
 
     //Eliminamos la memoria asignada por el puntero a la tabla hash
-    switch(argv[3][0]){
+    switch(argv[4][0]){
         case '0':
             delete mapa1;
             break;
