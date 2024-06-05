@@ -4,8 +4,8 @@
 #include "entry.h"
 #include "user.h"
 #include <vector>
+#include <stack>
 #include <iostream>
-#include <optional>
 
 template<typename K>
 class close_hash_map{
@@ -26,30 +26,30 @@ class close_hash_map{
         }
         ~close_hash_map() = default;
         user* get(K key);
-        void put(K key, user* usuario);
+        void put(K key, user* usuario, bool duplicating = false);
 //      user* remove(K key);
         int getSize();
         bool isEmpty();
         void set_probing_method( int (*probing_method)(K, int, int) );
     private:
         int probing(K key, int i);
- //     void duplicate_capacity();
+        void duplicate_capacity();
 };
 
 template<typename K>
 user* close_hash_map<K>::get(K key){
-
-    int i = 0;
-    int index = probing(key, i);
-
+    int index = probing(key, 0);
+    int parametro_busqueda = 2 * capacity;
     // Manejo de colisiones.
-    while ((*container)[index]) {
-        if ((*container)[index]->key == key) {
+    for(int i=0 ; i<parametro_busqueda ; i++) {
+        if ((*container)[index] != nullptr && (*container)[index]->key == key) {
             return (*container)[index]->value;
         }
-        index = probing(key, ++i);
+        index = probing(key, i+1);
+        if(i == 2*capacity){
+            return nullptr;
+        }
     }
-
     // Si se llega hasta acá, no se encontro el usuario.
     return nullptr;
 }
@@ -57,9 +57,7 @@ user* close_hash_map<K>::get(K key){
 // Inserta el par (key, usuario). En caso de colisión, se utiliza probing para resolver.
 // Si el par ya se encuentra en la hash table, no se hace ningún cambio.
 template<typename K>
-void close_hash_map<K>::put(K key, user* usuario){
-//    if (size >= int(capacity * 0.9f)) duplicate_capacity();
-
+void close_hash_map<K>::put(K key, user* usuario, bool duplicating){
     int i = 0;
     int index = probing(key, i);
 
@@ -69,10 +67,14 @@ void close_hash_map<K>::put(K key, user* usuario){
             return;
         }
         index = probing(key, ++i);
+        if(i == 2 * capacity){
+            duplicate_capacity();
+            i = 0;
+        }
     }
-
     (*container)[index] = new entry<K, user*>(key, usuario);
-    size++;
+    if(!duplicating) size++;
+    if (size >= int(capacity * 0.6f)) duplicate_capacity();
 }
 
 /* Complica algo las cosas
@@ -112,5 +114,35 @@ template<typename K>
 int close_hash_map<K>::probing(K key, int i){
     return probing_method(key, capacity, i);
 }
+
+template<typename K>
+void close_hash_map<K>::duplicate_capacity(){
+    
+    //Crea un hash map con el doble de tamaño para no tener que recorrer
+    close_hash_map<K>* tmp_map = new close_hash_map<K>(2 * capacity, probing_method);
+
+    //Pasa todos los datos del hash map actual al temporal
+    std::stack<Entry> tmp_users;
+    for(int i=0 ; i<capacity ; i++){
+        if((*container)[i]){
+            user* tmp_user = (*container)[i]->value;
+            K key = (*container)[i]->key;
+            tmp_map->put(key, tmp_user);
+            tmp_users.push((*container)[i]);
+        }
+    }
+
+    delete container;
+
+    container = new std::vector<Entry>(capacity * 2);
+    capacity *= 2;
+    while(!tmp_users.empty()){
+        Entry tmp_user = tmp_users.top();
+        tmp_users.pop();
+        put(tmp_user->key, tmp_user->value, true);
+    }
+    delete tmp_map;
+}
+
 
 #endif

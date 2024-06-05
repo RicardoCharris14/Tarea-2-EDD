@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 int main(int argc, char** argv){
-    // argv[1] = "1000";
+    // argv[1] = "10";
     // argv[2] = "C:/Users/rica1/OneDrive/Escritorio/Universidad/Semestre 5/Estructuras de datos/Tareas/Tarea EDD 2/datasets/dataset.csv";
     // argv[3] = "2";
 
@@ -158,7 +158,8 @@ int main(int argc, char** argv){
     //Inicio del temporizador
     auto start_fake = std::chrono::high_resolution_clock::now();
 
-    //Trata de buscar usuarios que no estan en el hash map;
+    //busca usuarios que no estan en el hash map;
+
     switch(argv[3][0]){
         case('0'):
             while(!fake_users.empty()){
@@ -185,6 +186,7 @@ int main(int argc, char** argv){
             break;
     }
 
+    std::cout << "Fin prueba busqueda usuarios inexistentes" << std::endl;
     //Fin del temporizador
     auto end_fake = std::chrono::high_resolution_clock::now();
     //Calculamos el intervalo de timepo

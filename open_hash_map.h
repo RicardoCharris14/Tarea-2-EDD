@@ -79,7 +79,9 @@ void open_hash_map<T>::put(T key, user* usuario, bool duplicating){
             size++;
             keySet.push_back(key);
             valueSet.push_back(usuario);
-            duplicate();
+            if(size >= int(capacity*0.9f)){
+                duplicate();
+            }
         }
     }
     else{
@@ -89,7 +91,9 @@ void open_hash_map<T>::put(T key, user* usuario, bool duplicating){
             size++;
             keySet.push_back(key);
             valueSet.push_back(usuario);
-            duplicate();
+            if(size >= int(capacity*0.9f)){
+                duplicate();
+            }
         }
     }
 }
@@ -149,24 +153,22 @@ std::vector<user*> open_hash_map<T>::values(){
 //Duplica el tamaño del contenedor en caso de que hayan una cantidad de elementos igual al 90% del tamaño del contenedor.
 template <typename T>
 void open_hash_map<T>::duplicate(){
-    if(size >= int(capacity * 0.9f)){
-        //Crea un hash map con el doble de tamaño para no tener que recorrer
-        open_hash_map* tmp_map = new open_hash_map(2 * capacity, hash_function);
-        for(auto key : keySet){
-            user* tmp_user = get(key);
-            tmp_map->put(key, tmp_user, true);
-        }
-
-        delete container;
-
-        container = new std::vector<Linked_list>(capacity * 2);
-        capacity *= 2;
-        for(auto key : keySet){
-            user* tmp_user = tmp_map->get(key);
-            put(key, tmp_user, true);
-        }
-        delete tmp_map;
+    //Crea un hash map con el doble de tamaño para no tener que recorrer
+    open_hash_map* tmp_map = new open_hash_map(2 * capacity, hash_function);
+    for(auto key : keySet){
+        user* tmp_user = get(key);
+        tmp_map->put(key, tmp_user, true);
     }
+
+    delete container;
+
+    container = new std::vector<Linked_list>(capacity * 2);
+    capacity *= 2;
+    for(auto key : keySet){
+        user* tmp_user = tmp_map->get(key);
+        put(key, tmp_user, true);
+    }
+    delete tmp_map;
 }
 
 

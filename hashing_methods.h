@@ -23,18 +23,18 @@ int mult(long long user_id, int capacity)
 int polynomial_accumulation(std::string user_name, int capacity)
 {
     long long sum = 0;
-    int i = 1;
+    long long i = 1;
     for (char ch : user_name) {
-        sum += (sum + ch)*(i);
+        sum += (sum + ch)*((i/7)+1);
         i++;
     }
     return int(sum % capacity);
 }
 
 int djb2(const std::string str, int capacity) {
-    int hash = 57;
+    int hash = 2;
     for (char c : str) {
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        hash = ((hash << 3) + hash) + c; /* hash * 9 + c */
     }
     return int(hash % capacity);
 }
