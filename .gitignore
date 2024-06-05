@@ -1,7 +1,8 @@
 # Ejecutables
 *.exe
 ejecutable
-test
+test_id
+test_name
 
 # Otros
 .vscode/

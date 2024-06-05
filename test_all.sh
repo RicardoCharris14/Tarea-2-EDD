@@ -24,9 +24,8 @@ Se testea con <step> usuarios, y se va incrementando en <step> usuarios hasta
 llegar a <max_users>. Cada test se realiza <num_tests> veces, posteriormente
 se saca el promedio.
 
-Ej: "test_all 200 1000 20" realizará los tests con: 200, 400, 600, 800 y 1000
-usuarios. Cada uno de ellos 20 veces, y escribirá los resultados en archivos
-separados para cada test.
+Ej: "test_all 200 1000" realizará los tests con: 200, 400, 600, 800 y 1000
+usuarios y escribirá los resultados en archivos separados para cada hashing.
 EOF
 
     exit 1
@@ -49,59 +48,64 @@ test_hash() { # Recibe el hashing a testear
 }
 
 open_hashing_id() {
-    $test_id_exe $1 $dataset $fakedata 0
+    $test_id_exe $1 $dataset $fakedata 0 $num_tests
 }
 
 open_hashing_name() {
-    $test_name_exe $1 $dataset $fakedata 0
+    $test_name_exe $1 $dataset $fakedata 0 $num_tests
 }
 
 linear_probing_id() {
-    $test_id_exe $1 $dataset $fakedata 1
+    $test_id_exe $1 $dataset $fakedata 1 $num_tests
 }
 
 linear_probing_name() {
-    $test_name_exe $1 $dataset $fakedata 1
+    $test_name_exe $1 $dataset $fakedata 1 $num_tests
 }
 
 double_probing_id() {
-    $test_id_exe $1 $dataset $fakedata 2
+    $test_id_exe $1 $dataset $fakedata 2 $num_tests
 }
 
 double_probing_name() {
-    $test_name_exe $1 $dataset $fakedata 2
+    $test_name_exe $1 $dataset $fakedata 2 $num_tests
 }
 
 quadratic_probing_id() {
-    $test_id_exe $1 $dataset $fakedata 3
+    $test_id_exe $1 $dataset $fakedata 3 $num_tests
 }
 
 quadratic_probing_name() {
-    $test_name_exe $1 $dataset $fakedata 3
+    $test_name_exe $1 $dataset $fakedata 3 $num_tests
 }
 
 unordered_map_id() {
-    $test_id_exe $1 $dataset $fakedata 4
+    $test_id_exe $1 $dataset $fakedata 4 $num_tests
 }
 
 unordered_map_name() {
-    $test_name_exe $1 $dataset $fakedata 4
+    $test_name_exe $1 $dataset $fakedata 4 $num_tests
 }
 
 ## Aca se hacen los tests
-for hashing in "open_hashing_id" #open_hashing_name linear_probing_id linear_probing_name double_probing_id double_probing_name quadratic_probing_id quadratic_probing_name unordered_map_id unordered_map_name"
+for hashing in open_hashing_id open_hashing_name linear_probing_id linear_probing_name double_probing_id double_probing_name quadratic_probing_id quadratic_probing_name unordered_map_id unordered_map_name
 do
-    printf "Testeando: %s...\n" "$hashing"
+    printf "Testeando: %s\n" "$hashing"
     filename=$hashing.csv
     if [ -e $output_dir/$filename ]
     then
         rm $output_dir/$filename
     fi
 
-    for i in $(seq 1 $3)
+    printf "hashing;num_usuarios;tiempo_insercion;tiempo_busqueda1;tiempo_busqueda2\n" >> $output_dir/$filename
+
+    for num_testing in $(seq $step $step $max_users)
     do
-        test_hash $hashing >> $output_dir/$filename
+        printf "%s usuarios..." "$num_testing"
+        $hashing $num_testing >> $output_dir/$filename
+        printf "done\n"
     done
+    printf "\n"
 done
 
 

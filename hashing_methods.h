@@ -1,6 +1,6 @@
 #ifndef HASHING_METHODS
 #define HASHING_METHODS
-
+#include <cstdint>
 #include <string>
 // --------------------------- key ~ user_id ------------------------------
 
@@ -15,6 +15,18 @@ int mult(long long user_id, int capacity)
     long double a = user_id*A;
     a -= (long long)a;
     return int(capacity * a);
+}
+
+uint32_t fnv1a_32(long long user_id, int capacity) {
+    const uint32_t FNV_prime = 16777619U;
+    const uint32_t offset_basis = 2166136261U;
+    uint32_t hash = offset_basis;
+    for (int i = 0; i < sizeof(user_id); ++i) {
+        hash ^= (user_id & 0xFF);
+        hash *= FNV_prime;
+        user_id >>= 8;
+    }
+    return hash;
 }
 
 

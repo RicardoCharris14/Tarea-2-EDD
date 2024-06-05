@@ -21,7 +21,7 @@ class close_hash_map{
         close_hash_map(int capacity, int (*probing_method)(K, int, int)) : size(0), capacity(capacity), probing_method(probing_method){
             container = new std::vector<Entry>(capacity, nullptr);
         }
-        close_hash_map(int (*probing_method)(K, int, int)) : size(0), capacity(3), probing_method(probing_method){
+        close_hash_map(int (*probing_method)(K, int, int)) : size(0), capacity(503), probing_method(probing_method){
             container = new std::vector<Entry>(capacity, nullptr);
         }
         ~close_hash_map() = default;
@@ -39,14 +39,18 @@ class close_hash_map{
 template<typename K>
 user* close_hash_map<K>::get(K key){
     int index = probing(key, 0);
-    int parametro_busqueda = 2 * capacity;
+    int max_probing = capacity;
     // Manejo de colisiones.
-    for(int i=0 ; i<parametro_busqueda ; i++) {
-        if ((*container)[index] != nullptr && (*container)[index]->key == key) {
+    for(int i=0 ; i<max_probing ; i++) {
+        if ((*container)[index] == nullptr) {
+            return nullptr;
+        } else if ((*container)[index]->key == key) {
             return (*container)[index]->value;
         }
+        // Colisión
         index = probing(key, i+1);
-        if(i == 2*capacity){
+        if(i == capacity){
+//            std::cout << "No se encontro nada:\n" << "Size: " << size << "\nCapacity:" << capacity << std::endl;
             return nullptr;
         }
     }
@@ -74,7 +78,7 @@ void close_hash_map<K>::put(K key, user* usuario, bool duplicating){
     }
     (*container)[index] = new entry<K, user*>(key, usuario);
     if(!duplicating) size++;
-    if (size >= int(capacity * 0.6f)) duplicate_capacity();
+    if (size >= int(capacity * 0.9f)) duplicate_capacity();
 }
 
 /* Complica algo las cosas
@@ -117,7 +121,7 @@ int close_hash_map<K>::probing(K key, int i){
 
 template<typename K>
 void close_hash_map<K>::duplicate_capacity(){
-    
+
     //Crea un hash map con el doble de tamaño para no tener que recorrer
     close_hash_map<K>* tmp_map = new close_hash_map<K>(2 * capacity, probing_method);
 

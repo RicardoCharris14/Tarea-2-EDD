@@ -50,7 +50,7 @@ class open_hash_map{
 //Elimina los punteros 'user*' que se encuentrarn dentro de valueSet y los contenedores.
 template <typename T>
 open_hash_map<T>::~open_hash_map(){
-    for(long long unsigned i=0 ; i<valueSet.size() ; i++){
+    for(unsigned i=0 ; i<valueSet.size() ; i++){
         delete valueSet[i];
     }
 }
@@ -110,7 +110,7 @@ user* open_hash_map<T>::remove(T key){
             (*container)[index] = nullptr;
         }
         size--;
-        for(long long unsigned i=0 ; i<keySet.size() ; i++){
+        for(unsigned i=0 ; i<keySet.size() ; i++){
             if(keySet[i]== key){
                 keySet.erase(keySet.begin() + i);
                 valueSet.erase(valueSet.begin() + i);

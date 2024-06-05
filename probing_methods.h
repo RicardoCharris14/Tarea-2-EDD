@@ -11,12 +11,12 @@ int id_linear_probing(long long user_id, int capacity, int i)
 
 int id_quadratic_probing(long long user_id, int capacity, int i)
 {
-    return (mult(user_id, capacity) + i*i + i) % capacity;
+    return std::abs((mult(user_id, capacity) + 2*i*i + i)) % capacity;
 }
 
 int id_double_probing(long long user_id, int capacity, int i)
 {
-    return std::abs(mult(user_id, capacity) + i*div(user_id, capacity)) % capacity;
+    return std::abs(mult(user_id, capacity) + i*int(fnv1a_32(user_id, capacity))) % capacity;
 }
 
 int name_linear_probing(std::string user_name, int capacity, int i)
