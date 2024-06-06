@@ -31,6 +31,7 @@ class close_hash_map{
         int getSize();
         bool isEmpty();
         void set_probing_method( int (*probing_method)(K, int, int) );
+        size_t calculate_used_space();
     private:
         int probing(K key, int i);
         void duplicate_capacity();
@@ -113,6 +114,28 @@ template<typename K>
 bool close_hash_map<K>::isEmpty(){
     return size==0;
 }
+
+template<typename K>
+size_t close_hash_map<K>::calculate_used_space(){
+    size_t used_space = 0;
+    used_space += sizeof(*this);
+    used_space += sizeof(size);
+    used_space += sizeof(capacity);
+    used_space += sizeof(*container);
+    for(int i=0 ; i<capacity ; i++){
+        if((*container)[i]){
+            used_space += sizeof(*((*container)[i]));
+            used_space += sizeof((*container)[i]->key);
+            used_space += sizeof(*((*container)[i]->value));
+            used_space += sizeof((*container)[i]->value->getID());
+            used_space += sizeof((*container)[i]->value->getUsername());
+            used_space += sizeof(int) * 3;
+            used_space += sizeof(std::string) * 2;
+        }
+    }
+    return used_space;
+}
+
 
 template<typename K>
 int close_hash_map<K>::probing(K key, int i){

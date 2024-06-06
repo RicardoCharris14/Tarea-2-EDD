@@ -36,12 +36,7 @@ class open_hash_map{
         int function(T);
         std::vector<T> keys();
         std::vector<user*> values();
-        void printCapacity(){
-            std::cout << "Capacidad: "<< capacity << std::endl;
-        }
-        void printSize(){
-            std::cout << "Size: "<< size << std::endl;
-        }
+        size_t calculate_used_space();
     private:
         void duplicate();  
 
@@ -148,6 +143,30 @@ std::vector<T> open_hash_map<T>::keys(){
 template <typename T>
 std::vector<user*> open_hash_map<T>::values(){
     return valueSet;
+}
+
+template <typename T>
+size_t open_hash_map<T>::calculate_used_space(){
+    size_t used_space = 0;
+    used_space += sizeof(*this);
+    used_space += sizeof(size);
+    used_space += sizeof(capacity);
+    used_space += sizeof(*container);
+    for(int i=0 ; i<capacity ; i++){
+        if((*container)[i]){
+            used_space += sizeof(*(*container)[i]);
+            for(int j=0 ; j<(*container)[i]->size() ; j++){
+                used_space += sizeof((*container)[i]->get(j));
+                used_space += sizeof((*container)[i]->get(j)->key);
+                used_space += sizeof(*((*container)[i]->get(j)->value));
+                used_space += sizeof((*container)[i]->get(j)->value->getID());
+                used_space += sizeof((*container)[i]->get(j)->value->getUsername());
+                used_space += sizeof(int) * 3;
+                used_space += sizeof(std::string) * 2;
+            }
+        }
+    }
+    return used_space;
 }
 
 //Duplica el tamaño del contenedor en caso de que hayan una cantidad de elementos igual al 90% del tamaño del contenedor.

@@ -8,6 +8,27 @@
 #include <iostream>
 #include <queue>
 #include <unordered_map>
+#include <list>
+
+//Funcion que calcula el espacio ocupado por el mapa de la STL
+template <typename K>
+size_t calculate_used_space_stl_map(std::unordered_map<K, user*>* mapa){
+    size_t used_space = 0;
+    used_space += sizeof(*mapa);
+    used_space += sizeof(mapa->size());
+    used_space += sizeof(mapa->max_size());
+    used_space += mapa->bucket_count() * sizeof(std::list<typename std::unordered_map<K, user*>::value_type>);
+
+    for(const auto& pair : *mapa){
+        used_space += sizeof(pair.first);
+        used_space += sizeof(*(pair.second));
+        used_space += sizeof(pair.second->getID());
+        used_space += sizeof(pair.second->getUsername());
+        used_space += sizeof(int) * 3;
+        used_space += sizeof(std::string) * 2;
+    }
+    return used_space;
+}
 
 int main(int argc, char** argv){
     if(argc<6){
@@ -22,10 +43,12 @@ int main(int argc, char** argv){
     double tiempo_total_insercion = 0;
     double tiempo_total_busqueda = 0;
     double tiempo_total_fake = 0;
+    size_t espacio_total_ocupado = 0;
 
     double tiempo_promedio_insercion;
     double tiempo_promedio_busqueda;
     double tiempo_promedio_fake;
+    size_t espacio_promedio_ocupado;
 
     for (int i = 0; i < num_pruebas; i++) {
         //Obtengo los primeros n usuarios del archivo csv
@@ -95,6 +118,7 @@ int main(int argc, char** argv){
                     mapa1->put(tmp_user->getID(), tmp_user);
                     usuarios_insert.pop();
                 }
+                espacio_total_ocupado += mapa1->calculate_used_space();
                 break;
             case('1'):
             case('2'):
@@ -104,6 +128,7 @@ int main(int argc, char** argv){
                     mapa2->put(tmp_user->getID(), tmp_user);
                     usuarios_insert.pop();
                 }
+                espacio_total_ocupado += mapa2->calculate_used_space();
                 break;
             case('4'):
                 while(!usuarios_insert.empty()){
@@ -111,6 +136,7 @@ int main(int argc, char** argv){
                     mapa3->insert({tmp_user->getID(), tmp_user});
                     usuarios_insert.pop();
                 }
+                espacio_total_ocupado += calculate_used_space_stl_map<long long>(mapa3);
                 break;
         }
         //Fin del temporizador
@@ -223,6 +249,7 @@ int main(int argc, char** argv){
     tiempo_promedio_insercion = tiempo_total_insercion/num_pruebas;
     tiempo_promedio_busqueda = tiempo_total_busqueda/num_pruebas;
     tiempo_promedio_fake = tiempo_total_fake/num_pruebas;
+    espacio_promedio_ocupado = (espacio_total_ocupado/num_pruebas)/1024;
 
     //Resultados
     switch (argv[4][0]) {
@@ -242,5 +269,5 @@ int main(int argc, char** argv){
             std::cout << "unordered_map_id";
             break;
     }
-    std::cout << ';' << num_valores << ';' << tiempo_promedio_insercion << ';' << tiempo_promedio_busqueda << ';' << tiempo_promedio_fake << std::endl;
+    std::cout << ';' << num_valores << ';' << tiempo_promedio_insercion << ';' << tiempo_promedio_busqueda << ';' << tiempo_promedio_fake << ';' << espacio_promedio_ocupado << std::endl;
 }
