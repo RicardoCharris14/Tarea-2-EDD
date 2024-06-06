@@ -23,7 +23,7 @@ plt.plot(df10['num_usuarios'], df10['tiempo_insercion'])
 plt.xlabel('número de usuarios')
 plt.ylabel('Tiempo de inserción')
 plt.title('Tiempo de inserción según user_name')
-plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'Unordered Map'])
+plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'STL Unordered Map'])
 
 # Grafico de tiempo de insercion segun id_usuario
 plt.subplot(2, 1, 2)
@@ -35,10 +35,10 @@ plt.plot(df9['num_usuarios'], df9['tiempo_insercion'])
 plt.xlabel('número de usuarios')
 plt.ylabel('Tiempo de insercion')
 plt.title('Tiempo de inserción según id_usuario')
-plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'Unordered Map'])
+plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'STL Unordered Map'])
 
 plt.tight_layout()
-
+plt.savefig('Grafico_insercion.png')
 
 
 #Grafico de tiempo de busqueda de usuarios existentes segun user_name
@@ -52,7 +52,7 @@ plt.plot(df10['num_usuarios'], df10['tiempo_busqueda1'])
 plt.xlabel('número de usuarios')
 plt.ylabel('Tiempo de busqueda')
 plt.title('Tiempo de busqueda(usuarios existentes) según user_name')
-plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'Unordered Map'])
+plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'STL Unordered Map'])
 
 #gafico de tiempo de busqueda de usuarios existentes segun id_usuario
 plt.subplot(2, 1, 2)
@@ -64,9 +64,10 @@ plt.plot(df9['num_usuarios'], df9['tiempo_busqueda1'])
 plt.xlabel('número de usuarios')
 plt.ylabel('Tiempo de insercion')
 plt.title('Tiempo de busqueda(usuarios existentes) según id_usuario')
-plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'Unordered Map'])
+plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'STL Unordered Map'])
 
 plt.tight_layout()
+plt.savefig('Grafico_busqueda_usuarios_reales.png')
 
 
 
@@ -81,7 +82,7 @@ plt.plot(df10['num_usuarios'], df10['tiempo_busqueda2'])
 plt.xlabel('número de usuarios')
 plt.ylabel('Tiempo de busqueda')
 plt.title('Tiempo de busqueda(usuarios inexistentes) según user_name')
-plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'Unordered Map'])
+plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'STL Unordered Map'])
 
 #gafico de tiempo de busqueda de usuarios inexistentes segun id_usuario
 plt.subplot(2, 1, 2)
@@ -93,8 +94,35 @@ plt.plot(df9['num_usuarios'], df9['tiempo_busqueda2'])
 plt.xlabel('número de usuarios')
 plt.ylabel('Tiempo de insercion')
 plt.title('Tiempo de busqueda(usuarios inexistentes) según id_usuario')
-plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'Unordered Map'])
+plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'STL Unordered Map'])
 
 plt.tight_layout()
+plt.savefig('Grafico_busqueda_usuarios_falsos.png')
+
+
+
+# Grafico de KB usados por tipo de hash_map segun user_name
+plt.figure()
+plt.subplot(2, 1, 1)
+plt.plot(df6['num_usuarios'], df6['KB_Hashmap'])
+plt.plot(df8['num_usuarios'], df8['KB_Hashmap'])
+plt.plot(df10['num_usuarios'], df10['KB_Hashmap'])
+plt.xlabel('número de usuarios')
+plt.ylabel('KB de memoria usados')
+plt.title('KB de memoria usados según user_name')
+plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'STL Unordered Map'])
+
+# Grafico de KB usados por tipo de hash_map segun id_usuario
+plt.subplot(2, 1, 2)
+plt.plot(df5['num_usuarios'], df5['KB_Hashmap'])
+plt.plot(df7['num_usuarios'], df7['KB_Hashmap'])
+plt.plot(df9['num_usuarios'], df9['KB_Hashmap'])
+plt.xlabel('número de usuarios')
+plt.ylabel('KB de memoria usados')
+plt.title('KB de memoria usados según id_usuario')
+plt.legend(['Close hashing', 'Open Hashing', 'STL Unordered Map'])
+
+plt.tight_layout()
+plt.savefig('Grafico_memoria_usada.png')
 
 plt.show()

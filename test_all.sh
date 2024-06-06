@@ -5,8 +5,8 @@ set -e
 ## CONFIG ##
 
 # Ejecutables
-test_id_exe="./test_id"
-test_name_exe="./test_name"
+test_id_exe="./testing/output/test_id"
+test_name_exe="./testing/output/test_name"
 
 # Datasets
 dataset="datasets/dataset.csv"
@@ -97,7 +97,7 @@ do
         rm $output_dir/$filename
     fi
 
-    printf "hashing;num_usuarios;tiempo_insercion;tiempo_busqueda1;tiempo_busqueda2\n" >> $output_dir/$filename
+    printf "hashing;num_usuarios;tiempo_insercion;tiempo_busqueda1;tiempo_busqueda2;KB_Hashmap\n" >> $output_dir/$filename
 
     for num_testing in $(seq $step $step $max_users)
     do
