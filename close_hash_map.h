@@ -34,7 +34,7 @@ class close_hash_map{
         size_t calculate_used_space();
     private:
         int probing(K key, int i);
-        void duplicate_capacity();
+        void duplicate();
 };
 
 template<typename K>
@@ -73,13 +73,13 @@ void close_hash_map<K>::put(K key, user* usuario, bool duplicating){
         }
         index = probing(key, ++i);
         if(i == 2 * capacity){
-            duplicate_capacity();
+            duplicate();
             i = 0;
         }
     }
     (*container)[index] = new entry<K, user*>(key, usuario);
     if(!duplicating) size++;
-    if (size >= int(capacity * 0.9f)) duplicate_capacity();
+    if (size >= int(capacity * 0.9f)) duplicate();
 }
 
 /* Complica algo las cosas
@@ -143,7 +143,7 @@ int close_hash_map<K>::probing(K key, int i){
 }
 
 template<typename K>
-void close_hash_map<K>::duplicate_capacity(){
+void close_hash_map<K>::duplicate(){
 
     //Crea un hash map con el doble de tamaño para no tener que recorrer
     close_hash_map<K>* tmp_map = new close_hash_map<K>(2 * capacity, probing_method);
