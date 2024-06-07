@@ -30,7 +30,6 @@ class close_hash_map{
 //      user* remove(K key);
         int getSize();
         bool isEmpty();
-        void set_probing_method( int (*probing_method)(K, int, int) );
         size_t calculate_used_space();
     private:
         int probing(K key, int i);
