@@ -31,8 +31,7 @@ class open_hash_map{
         user* get(T);
         void put(T, user*, bool duplicating = false);
         user* remove(T);
-        int getSize();
-        bool isEmpty();
+
         int function(T);
         std::vector<T> keys();
         std::vector<user*> values();
@@ -117,16 +116,6 @@ user* open_hash_map<T>::remove(T key){
     else{
         return nullptr;
     }
-}
-
-template <typename T>
-int open_hash_map<T>::getSize(){
-    return size;
-}
-
-template <typename T>
-bool open_hash_map<T>::isEmpty(){
-    return size==0;
 }
 
 //Ejecuta la funcion hash, que se ingreso en el constructor, para le key ingresada.

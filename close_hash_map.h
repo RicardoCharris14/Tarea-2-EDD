@@ -28,8 +28,7 @@ class close_hash_map{
         user* get(K key);
         void put(K key, user* usuario, bool duplicating = false);
 //      user* remove(K key);
-        int getSize();
-        bool isEmpty();
+
         size_t calculate_used_space();
     private:
         int probing(K key, int i);
@@ -104,15 +103,6 @@ user* hashMap<K>::remove(K user_id){
 }
 */
 
-template<typename K>
-int close_hash_map<K>::getSize(){
-    return size;
-}
-
-template<typename K>
-bool close_hash_map<K>::isEmpty(){
-    return size==0;
-}
 
 template<typename K>
 size_t close_hash_map<K>::calculate_used_space(){
