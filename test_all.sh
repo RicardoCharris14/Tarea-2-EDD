@@ -5,8 +5,8 @@ set -e
 ## CONFIG ##
 
 # Ejecutables
-test_id_exe="./testing/output/test_id"
-test_name_exe="./testing/output/test_name"
+test_id_exe="./test_id"
+test_name_exe="./test_name"
 
 # Datasets
 dataset="datasets/dataset.csv"

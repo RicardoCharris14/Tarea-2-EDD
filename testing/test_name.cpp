@@ -92,19 +92,19 @@ int main(int argc, char** argv){
         switch(argv[4][0]){
             case '0':
                 hash_function1 = polynomial_accumulation;
-                mapa1 = new open_hash_map<std::string>(100, hash_function1);
+                mapa1 = new open_hash_map<std::string>(101, hash_function1);
                 break;
             case '1':
                 hash_function2 = name_linear_probing;
-                mapa2 = new close_hash_map<std::string>(100, hash_function2);
+                mapa2 = new close_hash_map<std::string>(101, hash_function2);
                 break;
             case '2':
                 hash_function2 = name_double_probing;
-                mapa2 = new close_hash_map<std::string>(100, hash_function2);
+                mapa2 = new close_hash_map<std::string>(101, hash_function2);
                 break;
             case '3':
                 hash_function2 = name_quadratic_probing;
-                mapa2 = new close_hash_map<std::string>(100, hash_function2);
+                mapa2 = new close_hash_map<std::string>(101, hash_function2);
                 break;
             case '4':
                 mapa3 = new std::unordered_map<std::string, user*>;
@@ -125,7 +125,6 @@ int main(int argc, char** argv){
                     mapa1->put(tmp_user->getUsername(), tmp_user);
                     usuarios_insercion.pop();
                 }
-                espacio_total_ocupado += mapa1->calculate_used_space();
                 break;
             case('1'):
             case('2'):
@@ -135,7 +134,6 @@ int main(int argc, char** argv){
                     mapa2->put(tmp_user->getUsername(), tmp_user);
                     usuarios_insercion.pop();
                 }
-                espacio_total_ocupado += mapa2->calculate_used_space();
                 break;
             case('4'):
                 while(!usuarios_insercion.empty()){
@@ -143,11 +141,25 @@ int main(int argc, char** argv){
                     mapa3->insert({tmp_user->getUsername(), tmp_user});
                     usuarios_insercion.pop();
                 }
-                espacio_total_ocupado += calculate_used_space_stl_map<std::string>(mapa3);
                 break;
         }
         //Fin del temporizador
         auto end_insert = std::chrono::high_resolution_clock::now();
+
+        // Calculo de memoria
+        switch(argv[4][0]){
+            case('0'):
+                espacio_total_ocupado += mapa1->calculate_used_space();
+                break;
+            case('1'):
+            case('2'):
+            case('3'):
+                espacio_total_ocupado += mapa2->calculate_used_space();
+                break;
+            case('4'):
+                espacio_total_ocupado += calculate_used_space_stl_map<std::string>(mapa3);
+                break;
+        }
         //std::cout << "Fin de la prueba" << std::endl;
         //Calculamos el tiempo de ejecución
         double tiempo_ejecucion_insercion = std::chrono::duration_cast<std::chrono::nanoseconds>(end_insert - start_insert).count();
