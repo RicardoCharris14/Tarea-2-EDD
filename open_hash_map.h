@@ -95,7 +95,7 @@ void open_hash_map<T>::put(T key, user* usuario, bool duplicating){
             size++;
             keySet.push_back(key);
             valueSet.push_back(usuario);
-            if(size >= int(capacity*0.9f)){
+            if(size >= int(capacity*0.6f)){
                 duplicate();
             }
         }

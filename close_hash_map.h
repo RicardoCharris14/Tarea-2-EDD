@@ -87,7 +87,7 @@ void close_hash_map<K>::put(K key, user* usuario, bool duplicating){
     }
     (*container)[index] = new entry<K, user*>(key, usuario);
     if(!duplicating) size++;
-    if (size >= int(capacity * 0.9f)) duplicate();
+    if (size >= int(capacity * 0.6f)) duplicate();
 }
 
 /* Complica algo las cosas
