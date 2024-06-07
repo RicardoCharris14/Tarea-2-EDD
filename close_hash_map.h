@@ -3,6 +3,7 @@
 
 #include "entry.h"
 #include "user.h"
+#include "prime_numbers.h"
 #include <vector>
 #include <stack>
 #include <iostream>
@@ -15,14 +16,23 @@ class close_hash_map{
     private:
         int size;
         int capacity;
+        int prime_index;
         Vector container;
         int (*probing_method) (K key, int capacity, int i);
     public:
         close_hash_map(int capacity, int (*probing_method)(K, int, int)) : size(0), capacity(capacity), probing_method(probing_method){
             container = new std::vector<Entry>(capacity, nullptr);
+            prime_index = 0;
+            while(true){
+                if(numeros_primos[prime_index + 1] > capacity){
+                    break;
+                }
+                prime_index++;
+            }
         }
-        close_hash_map(int (*probing_method)(K, int, int)) : size(0), capacity(503), probing_method(probing_method){
+        close_hash_map(int (*probing_method)(K, int, int)) : size(0), capacity(11), probing_method(probing_method){
             container = new std::vector<Entry>(capacity, nullptr);
+            prime_index = 2;
         }
         ~close_hash_map() = default;
         user* get(K key);
@@ -133,9 +143,10 @@ int close_hash_map<K>::probing(K key, int i){
 
 template<typename K>
 void close_hash_map<K>::duplicate(){
+    int new_capacity = numeros_primos[++prime_index];
 
     //Crea un hash map con el doble de tamaño para no tener que recorrer
-    close_hash_map<K>* tmp_map = new close_hash_map<K>(2 * capacity, probing_method);
+    close_hash_map<K>* tmp_map = new close_hash_map<K>(new_capacity, probing_method);
 
     //Pasa todos los datos del hash map actual al temporal
     std::stack<Entry> tmp_users;
@@ -150,8 +161,8 @@ void close_hash_map<K>::duplicate(){
 
     delete container;
 
-    container = new std::vector<Entry>(capacity * 2);
-    capacity *= 2;
+    container = new std::vector<Entry>(new_capacity);
+    capacity = new_capacity;
     while(!tmp_users.empty()){
         Entry tmp_user = tmp_users.top();
         tmp_users.pop();

@@ -4,6 +4,7 @@
 #include "entry.h"
 #include "user.h"
 #include "linked_list.h"
+#include "prime_numbers.h"
 #include <vector>
 #include <iostream>
 
@@ -16,6 +17,7 @@ class open_hash_map{
     private:
         int size;
         int capacity;
+        int prime_index;
         Vector container;
         int (*hash_function)(T, int);
         std::vector<T> keySet;
@@ -23,9 +25,17 @@ class open_hash_map{
     public:
         open_hash_map(int capacity, int (*hash_function)(T, int)) : size(0), capacity(capacity), hash_function(hash_function){
             container = new std::vector<Linked_list>(capacity, nullptr);
+            prime_index = 0;
+            while(true){
+                if(numeros_primos[prime_index + 1] > capacity){
+                    break;
+                }
+                prime_index++;
+            }
         }
-        open_hash_map(int (*hash_function)(T, int)) : size(0), capacity(5), hash_function(hash_function) {
+        open_hash_map(int (*hash_function)(T, int)) : size(0), capacity(11), hash_function(hash_function) {
             container = new std::vector<Linked_list>(capacity, nullptr);
+            prime_index = 2;
         }
         ~open_hash_map();
         user* get(T);
@@ -161,8 +171,9 @@ size_t open_hash_map<T>::calculate_used_space(){
 //Duplica el tamaño del contenedor en caso de que hayan una cantidad de elementos igual al 90% del tamaño del contenedor.
 template <typename T>
 void open_hash_map<T>::duplicate(){
+    int new_capacity = numeros_primos[++prime_index];
     //Crea un hash map con el doble de tamaño para no tener que recorrer
-    open_hash_map* tmp_map = new open_hash_map(2 * capacity, hash_function);
+    open_hash_map* tmp_map = new open_hash_map(new_capacity, hash_function);
     for(auto key : keySet){
         user* tmp_user = get(key);
         tmp_map->put(key, tmp_user, true);
@@ -170,8 +181,8 @@ void open_hash_map<T>::duplicate(){
 
     delete container;
 
-    container = new std::vector<Linked_list>(capacity * 2);
-    capacity *= 2;
+    container = new std::vector<Linked_list>(new_capacity);
+    capacity = new_capacity;
     for(auto key : keySet){
         user* tmp_user = tmp_map->get(key);
         put(key, tmp_user, true);
