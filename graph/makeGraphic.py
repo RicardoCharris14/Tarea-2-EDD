@@ -110,7 +110,7 @@ plt.plot(df10['num_usuarios'], df10['KB_Hashmap'])
 plt.xlabel('número de usuarios')
 plt.ylabel('KB de memoria usados')
 plt.title('KB de memoria usados según user_name')
-plt.legend(['Double Probing', 'Linear Probing', 'Quadratic Probing', 'Open Hashing', 'STL Unordered Map'])
+plt.legend(['Closed hashing', 'Open Hashing', 'STL Unordered Map'])
 
 # Grafico de KB usados por tipo de hash_map segun id_usuario
 plt.subplot(2, 1, 2)
